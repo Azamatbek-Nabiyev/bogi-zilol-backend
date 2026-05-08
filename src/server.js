@@ -23,9 +23,10 @@ async function startServer(){
         await mongoose.connect(process.env.MONGO_API, {
             tlsAllowInvalidCertificates: true
         });
-        server.listen(PORT, () => console.log("Server is running!", PORT));
+
+        server.listen(PORT, '0.0.0.0' ,() => console.log("Server is running!", PORT));
     } catch (err) {
-        console.error("Server start error:", err); // ✅
+        console.error("Server start error:", err);
         process.exit(1);
     }
 }
