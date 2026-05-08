@@ -1,10 +1,11 @@
 const dotenv = require('dotenv');
+dotenv.config();
+
 const http = require('http');
 const mongoose = require('mongoose');
 const app = require('./app');
 
-const PORT = 8000
-dotenv.config();
+const PORT = process.env.PORT || 8000
 mongoose.connection.once("open", () => {
     console.log("MongoDb connection is ready!")
 })
