@@ -3,7 +3,6 @@ const { getAllReserations, getOneReservation, createReservation } = require('../
 
 const reservationRouter = express.Router();
 
-
 // get all
 reservationRouter.get('/', getAllReserations);
 
