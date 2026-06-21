@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const foodRouter = require('./routes/food');
 const categoryRouter = require('./routes/category');
 const orderRouter = require('./routes/order');
@@ -6,6 +7,11 @@ const userRouter = require('./routes/user');
 const reservationRouter = require('./routes/reservation');
 
 const app = express();
+app.use(cors({
+    origin: "http://localhost:8080", // frontend url
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
 app.use(express.json());
     
 app.use('/foods', foodRouter);
