@@ -33,4 +33,28 @@ const getOneUser = async (req, res) => {
     }
 }
 
-module.exports = {getAllUsers, getOneUser}
+// delete 
+const deleteUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+  const deleted = await User.findByIdAndDelete(id);
+
+  if(!deleted){
+    return res.status(404).json({
+      message: err.message,
+    });
+  }
+
+  res.status(200).json({
+    message: "Deleted!",
+    data: deleted
+  });
+
+  } catch(err){
+     res.status(500).json({
+      message: err.message,
+    });
+  }
+}
+module.exports = {getAllUsers, getOneUser, deleteUser}

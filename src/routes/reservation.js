@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllReserations, getOneReservation, createReservation } = require('../controllers/reservation');
+const { getAllReserations, getOneReservation, createReservation, deleteReservation } = require('../controllers/reservation');
 
 const reservationRouter = express.Router();
 
@@ -8,6 +8,9 @@ reservationRouter.get('/', getAllReserations);
 
 // get one
 reservationRouter.get('/:id', getOneReservation);
+
+// delete one
+reservationRouter.delete('/:id', deleteReservation);
 
 // create
 reservationRouter.post('/', createReservation);

@@ -9,7 +9,7 @@ const reservationRouter = require('./routes/reservation');
 const app = express();
 app.use(cors({
     origin: "http://localhost:8080", // frontend url
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
     credentials: true
 }));
 app.use(express.json());
