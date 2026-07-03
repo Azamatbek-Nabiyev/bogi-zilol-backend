@@ -50,4 +50,29 @@ const createReservation = async (req, res) => {
     }
 }
 
-module.exports = { getAllReserations, getOneReservation, createReservation };
+// delete reservation
+const deleteReservation = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+  const deleted = await Reservation.findByIdAndDelete(id);
+
+  if(!deleted){
+    return res.status(404).json({
+      message: err.message,
+    });
+  }
+
+  res.status(200).json({
+    message: "Deleted!",
+    data: deleted
+  });
+
+  } catch(err){
+     res.status(500).json({
+      message: err.message,
+    });
+  }
+}
+
+module.exports = { getAllReserations, getOneReservation, createReservation, deleteReservation };
