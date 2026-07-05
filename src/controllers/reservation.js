@@ -3,7 +3,7 @@ const Reservation = require("../models/reservation/reservation")
 // get all reservations
 const getAllReserations = async (req, res) => {
     try {
-        const all = await Reservation.find();
+        const all = await Reservation.find().populate('user_id', '-password');
 
         res.status(200).json({
             total: all.length,
@@ -21,7 +21,7 @@ const getOneReservation = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const reservation = await Reservation.findById(id);
+        const reservation = await Reservation.findById(id).populate('user_id', '-password');
 
         res.status(200).json(reservation);
 
