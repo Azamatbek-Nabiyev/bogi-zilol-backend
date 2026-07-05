@@ -9,7 +9,7 @@ const reservationSchema = mongoose.Schema({
     table_preference: {
         type: String,
         enum: {
-            values: ['indoor', 'garden', 'private_room', 'window']
+            values: ['indoor', 'outdoor', 'private_room', 'window']
         },
         required: true
     },
