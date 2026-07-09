@@ -5,6 +5,8 @@ const categoryRouter = require('./routes/category');
 const orderRouter = require('./routes/order');
 const userRouter = require('./routes/user');
 const reservationRouter = require('./routes/reservation');
+const AppError = require('./utils/appError');
+const globalErrorController = require('./controllers/errorController');
 
 const app = express();
 app.use(cors({
@@ -19,5 +21,13 @@ app.use('/category', categoryRouter);
 app.use('/order', orderRouter);
 app.use('/users', userRouter);
 app.use('/reservations', reservationRouter);
+
+// agar route yo'q bo'lsa
+app.all('*other', (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+
+// global error handler
+app.use(globalErrorController);
 
 module.exports = app;

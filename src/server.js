@@ -23,6 +23,10 @@ async function startServer(){
         await mongoose.connect(process.env.MONGO_API, {
             tlsAllowInvalidCertificates: true
         });
+        
+        // Telegram botni ishga tushirish (DB ulangandan keyin)
+        require('./utils/telegramBot');
+        
         server.listen(PORT, () => console.log("Server is running!", PORT));
     } catch (err) {
         console.error("Server start error:", err);
