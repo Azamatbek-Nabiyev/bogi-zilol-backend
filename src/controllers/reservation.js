@@ -1,78 +1,65 @@
-const Reservation = require("../models/reservation/reservation")
+const { Reservation } = require("../models");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
 // get all reservations
-const getAllReserations = async (req, res) => {
-    try {
-        const all = await Reservation.find().populate('user_id', '-password');
+const getAllReserations = catchAsync(async (req, res, next) => {
+  const all = await Reservation.find().populate("user_id", "-password");
 
-        res.status(200).json({
-            total: all.length,
-            data: all
-        });
-    } catch(err){
-        res.status(500).json({
-            message: err.message
-        })
-    }
-}
+  res.status(200).json({
+    total: all.length,
+    data: all,
+  });
+});
 
 // get one reservation
-const getOneReservation = async (req, res) => {
-    const id = req.params.id;
+const getOneReservation = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
 
-    try {
-        const reservation = await Reservation.findById(id).populate('user_id', '-password');
+  const reservation = await Reservation.findById(id).populate(
+    "user_id",
+    "-password",
+  );
 
-        res.status(200).json(reservation);
-
-    } catch(err){
-        res.status(500).json({
-            message: err.message
-        })
-    }
-}
+  res.status(200).json(reservation);
+});
 
 // create reservation
-const createReservation = async (req, res) => {
+const createReservation = catchAsync(async (req, res, next) => {
+  const { user_id, table_preference, date, time, guests_count, note } =
+    req.body;
 
-    const {user_id, table_preference, date, time, guests_count, note} = req.body;
+  const reservation = await Reservation.create({
+    user_id,
+    table_preference,
+    date,
+    time,
+    guests_count,
+    note,
+  });
 
-    try {
-
-        const reservation = await Reservation.create({user_id, table_preference, date, time, guests_count, note});
-
-        res.status(201).json(reservation);
-
-    } catch(err){
-        res.status(200).json({
-            message: err.message
-        })
-    }
-}
+  res.status(201).json(reservation);
+});
 
 // delete reservation
-const deleteReservation = async (req, res) => {
-  try {
-    const id = req.params.id;
+const deleteReservation = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
 
   const deleted = await Reservation.findByIdAndDelete(id);
 
-  if(!deleted){
-    return res.status(404).json({
-      message: err.message,
-    });
+  if (!deleted) {
+    return next(new AppError(`No reservation found with this ID`, 404));
   }
 
   res.status(200).json({
     message: "Deleted!",
-    data: deleted
+    data: deleted,
   });
+});
 
-  } catch(err){
-     res.status(500).json({
-      message: err.message,
-    });
-  }
-}
-
-module.exports = { getAllReserations, getOneReservation, createReservation, deleteReservation };
+module.exports = {
+  getAllReserations,
+  getOneReservation,
+  createReservation,
+  deleteReservation,
+};
