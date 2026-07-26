@@ -1,5 +1,6 @@
 const express = require('express');
 const {getAllFoods, getOneFood, createFood, updateFood, deleteFood} = require('../controllers/food');
+const {protect, restrictTo} = require('../controllers/authController');
 
 const foodRouter = express.Router();
 
@@ -10,12 +11,12 @@ foodRouter.get('/', getAllFoods);
 foodRouter.get('/:id', getOneFood);
 
 // create food
-foodRouter.post('/create', createFood);
+foodRouter.post('/create', protect, restrictTo('admin'), createFood);
 
 // update food
-foodRouter.patch('/:id', updateFood);
+foodRouter.patch('/:id', protect, restrictTo('admin'), updateFood);
 
 // delete food
-foodRouter.delete('/:id', deleteFood);
+foodRouter.delete('/:id', protect, restrictTo('admin'), deleteFood);
 
 module.exports = foodRouter

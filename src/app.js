@@ -10,7 +10,7 @@ const globalErrorController = require('./controllers/errorController');
 
 const app = express();
 app.use(cors({
-    origin: "http://localhost:8080", // frontend url
+    origin: ["http://localhost:8080", "https://bogizilol-app.vercel.app", "https://bogizilol.uz"], // frontend url
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
     credentials: true
 }));

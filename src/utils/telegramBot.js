@@ -28,7 +28,7 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
 
 // /start token siz bosilsa (masalan login uchun qayta ochilsa)
 bot.onText(/^\/start$/, (msg) => {
-    bot.sendMessage(msg.chat.id, 'Salom! Royxatdan otish uchun saytimizga tashrif buyuring. https://kun.uz');
+    bot.sendMessage(msg.chat.id, "Assalomu alaykum!\nRo'yxatdan o'tish uchun saytimizga tashrif buyuring. https://bogizilol.uz");
 });
 
 // user "Raqamni ulashish" tugmasini bosganda

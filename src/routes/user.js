@@ -1,6 +1,6 @@
 const express = require('express');
 const { getAllUsers, getOneUser, deleteUser } = require('../controllers/user');
-const {loginAdmin, requestLoginCode, verifyLoginCode, signUpRequest, confirmSignUp} = require('../controllers/authController');
+const {loginAdmin, requestLoginCode, verifyLoginCode, signUpRequest, confirmSignUp, protect, restrictTo} = require('../controllers/authController');
 
 const userRouter = express.Router();
 
@@ -15,13 +15,13 @@ userRouter.post('/login-verify', verifyLoginCode);
 userRouter.post('/signup-request', signUpRequest);
 userRouter.post('/signup-confirm', confirmSignUp);
 
-// get all users
-userRouter.get('/', getAllUsers);
+// get all users - only admin
+userRouter.get('/', protect, restrictTo('admin'), getAllUsers);
 
 // get one user
-userRouter.get('/:id', getOneUser);
+userRouter.get('/:id', protect, getOneUser);
 
 // delete
-userRouter.delete('/:id', deleteUser);
+userRouter.delete('/:id', protect, restrictTo('admin'), deleteUser);
 
 module.exports = userRouter;

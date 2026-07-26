@@ -4,6 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { User, PendingSignUp } = require('../models');
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 
 const signToken = id => {
     return jwt.sign({id}, process.env.JWT_SECRET, {
@@ -114,7 +115,7 @@ const requestLoginCode = catchAsync(async (req, res, next)=> {
         return next(new AppError('Please provide phone number!', 400))
     }
 
-    const user = await User.findOne({ phone }).select('+telegramChatId');
+    const user = await User.findOne({ phone, role: 'user' }).select('+telegramChatId');
 
     if(!user){
         return next(new AppError('No user found with this ID', 404))
@@ -158,11 +159,56 @@ const verifyLoginCode = catchAsync(async (req, res, next) => {
     });
 })
 
+const protect = catchAsync(async (req, res, next) => {
+    // 1) getting token and check if it's here
+    let token;
+
+    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+        token = req.headers.authorization.split(' ')[1]        
+    }
+ 
+    if(!token){
+        return next(new AppError('you are not logged in! Please log in to get access', 401));
+    }
+
+    // 2) verification token
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    // 3) check if user still exists
+    const currentUser = await User.findById(decoded.id);
+
+    if(!currentUser){
+        return next(new AppError('The user belonging to this token does not longer exist.', 401))
+    }
+
+    // 4) check if user changed password after the token was issued
+    if(currentUser.changedPasswordAfter(decoded.iat)){
+        return next(new AppError('User recently changed password! Please log in again!', 401))
+    }
+
+    // GRAND ACCESS TO PROTECTED ROUTE
+    req.user = currentUser;
+
+    next();
+});
+
+const restrictTo = (...roles) => {
+    return (req, res, next) => {
+        // roles ['admin', 'lead-guide']
+        if(!roles.includes(req.user.role)){
+            return next(new AppError('You do not have permission to perform this action!', 403))
+        }
+
+        next();
+    }
+}
 
 module.exports = {
     loginAdmin,
     signUpRequest,
     confirmSignUp,
     requestLoginCode,
-    verifyLoginCode
+    verifyLoginCode,
+    protect, 
+    restrictTo
 };
