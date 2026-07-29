@@ -12,6 +12,27 @@ const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
+// create user
+const createUser = catchAsync(async (req, res, next) => {
+
+  const { firstname, lastname, phone, password, role } = req.body;
+
+  if(!phone || !password){
+    return next(new AppError("Password and phone is required!", 400));
+  }
+
+  const created = await User.create({ firstname, lastname, phone, password, role })
+
+  const userObj = created.toObject();
+  delete userObj.password;
+
+  res.status(201).json({
+    status: 'success',
+    data: userObj
+  })
+
+});
+
 // get one
 const getOneUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
@@ -37,4 +58,4 @@ const deleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { getAllUsers, getOneUser, deleteUser };
+module.exports = { getAllUsers, getOneUser, deleteUser, createUser };

@@ -6,6 +6,11 @@ const orderSchema = mongoose.Schema({
         ref: "User",
         required: true
     },
+    courier: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+    },
     address: {
         type: String,
         required: true,

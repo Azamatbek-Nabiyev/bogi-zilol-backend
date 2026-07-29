@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Order, OrderItem } = require("../models");
+const { Order, OrderItem, User } = require("../models");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
@@ -72,7 +72,14 @@ const createOrder = catchAsync(async (req, res, next) => {
 
 // get all
 const getAllOrders = catchAsync(async (req, res) => {
-  const orders = await Order.find();
+  const filter = {
+    status: { $ne: "cancelled" }
+  }
+  
+   const orders = await Order.find(filter).populate(
+    "courier",
+    "firstname lastname phone"
+  ).populate("user_id", "firstname lastname phone");;
 
   res.status(200).json({
     status: "success",
@@ -85,7 +92,10 @@ const getAllOrders = catchAsync(async (req, res) => {
 const getOneOrder = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  const order = await Order.findById(id);
+   const order = await Order.findById(id).populate(
+    "courier",
+    "firstname lastname phone"
+  );
 
   if (!order) {
     return next(new AppError("Order not found!", 404));
@@ -100,8 +110,8 @@ const getOneOrder = catchAsync(async (req, res, next) => {
   });
 });
 
-// update status — separate endpoint, should be protected by a middleware
-// (e.g. admin/courier only)
+// update status - admin, chef, courier uchun
+
 const updateOrderStatus = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -114,7 +124,7 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
     "delivered",
     "cancelled",
   ];
-
+  
   if (!status || !allowedStatuses.includes(status)) {
     return next(new AppError("Invalid or missing status!", 400));
   }
@@ -132,4 +142,35 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "success", data: order });
 });
 
-module.exports = { createOrder, getOneOrder, getAllOrders, updateOrderStatus };
+// assign courier
+const assignCourier = catchAsync(async (req, res, next) => {
+
+  const { id } = req.params;
+
+  const { courierId } = req.body;
+
+  if (!courierId) {
+    return next(new AppError("courierId is required!", 400));
+  }
+
+  const courier = await User.findOne({ _id: courierId, role: "courier" });
+
+  if (!courier) {
+    return next(new AppError("Courier not found!", 404));
+  }
+
+  const order = await Order.findByIdAndUpdate(
+    id,
+    { courier: courierId },
+    { new: true, runValidators: true }
+  ).populate("courier", "firstname lastname phone");
+
+  if (!order) {
+    return next(new AppError("Order not found!", 404));
+  }
+
+  res.status(200).json({ status: "success", data: order });
+
+});
+
+module.exports = { createOrder, getOneOrder, getAllOrders, updateOrderStatus, assignCourier};

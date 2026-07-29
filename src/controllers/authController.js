@@ -12,7 +12,7 @@ const signToken = id => {
     })
 };
 
-const loginAdmin = catchAsync(async(req, res, next) => {
+const login = catchAsync(async(req, res, next) => {
     const { phone, password } = req.body;
 
     // 1) check if phone and password exist
@@ -28,8 +28,9 @@ const loginAdmin = catchAsync(async(req, res, next) => {
     }
 
     // 3) check if user is admin
-    if(user.role !== 'admin'){
-        return next(new AppError('Access denied. Admins only.', 403));
+     const allowedRoles = ['admin', 'chef', 'courier'];
+    if (!allowedRoles.includes(user.role)) {
+        return next(new AppError('Access denied.', 403));
     }
 
     // 4) if everything ok, send token to admin
@@ -204,7 +205,7 @@ const restrictTo = (...roles) => {
 }
 
 module.exports = {
-    loginAdmin,
+    login,
     signUpRequest,
     confirmSignUp,
     requestLoginCode,

@@ -4,6 +4,7 @@ const {
   getAllOrders,
   getOneOrder,
   updateOrderStatus,
+  assignCourier,
 } = require('../controllers/order');
 const { protect, restrictTo } = require('../controllers/authController');
 
@@ -25,5 +26,9 @@ orderRouter.patch(
   restrictTo('admin', 'courier', 'chef'),
   updateOrderStatus
 );
+
+// assign courier
+orderRouter.patch('/:id/assign-courier', protect, restrictTo('admin', 'chef'), assignCourier);
+
 
 module.exports = orderRouter;
