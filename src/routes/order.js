@@ -13,8 +13,8 @@ const orderRouter = express.Router();
 // create order — har qanday login qilgan foydalanuvchi
 orderRouter.post('/create-order', protect, createOrder);
 
-// get all — faqat admin
-orderRouter.get('/', protect, restrictTo('admin', 'chef'), getAllOrders);
+// get all 
+orderRouter.get('/', protect, restrictTo('admin', 'chef', 'courier'), getAllOrders);
 
 // get one — login qilgan foydalanuvchi (o'ziniki yoki admin, controllerda tekshiriladi)
 orderRouter.get('/:id', protect, getOneOrder);

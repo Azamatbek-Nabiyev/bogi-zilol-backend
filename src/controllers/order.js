@@ -71,11 +71,17 @@ const createOrder = catchAsync(async (req, res, next) => {
 });
 
 // get all
-const getAllOrders = catchAsync(async (req, res) => {
+const getAllOrders = catchAsync(async (req, res, next) => {
   const filter = {
     status: { $ne: "cancelled" }
   }
   
+  console.log(req.user);
+  
+  if (req.user.role == 'courier') {
+    filter.courier = req.user_id;
+  }
+
    const orders = await Order.find(filter).populate(
     "courier",
     "firstname lastname phone"
